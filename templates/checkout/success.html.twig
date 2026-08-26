@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande confirmée — {{ shop.name }}{% endblock %}
+
+{% block body %}
+    <div style="text-align:center; padding:3rem 0;">
+        <div style="font-size:4rem;">✅</div>
+        <h1>Merci pour votre commande !</h1>
+        <p>Votre commande <strong>{{ order.reference }}</strong> a bien été enregistrée.</p>
+        {% if app.request.query.get('dev') %}
+            <p style="color:#92400e; background:#fef3c7; display:inline-block; padding:0.5rem 1rem; border-radius:8px;">
+                ⚠️ Mode démo : paiement simulé (Stripe non configuré).
+            </p>
+        {% endif %}
+        <p style="margin-top:2rem;">
+            <a href="{{ path('app_account_order', { id: order.id }) }}" class="btn">Voir ma commande</a>
+            <a href="{{ path('app_catalog') }}" class="btn-ghost" style="color:var(--color-primary);">Continuer mes achats</a>
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{{ shop.name }}{% endblock %}</title>
+        <meta name="description" content="{% block meta_description %}{{ shop.description }}{% endblock %}">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🛍️</text></svg>">
+
+        {# Variables CSS générées depuis config/shop.yaml -> utilisables partout #}
+        <style>
+            :root {
+                --color-primary:    {{ shop.theme.primary }};
+                --color-secondary:  {{ shop.theme.secondary }};
+                --color-accent:     {{ shop.theme.accent }};
+                --color-background: {{ shop.theme.background }};
+                --color-text:       {{ shop.theme.text }};
+                --font-family:      {{ shop.theme.font|raw }};
+            }
+        </style>
+
+        {% block stylesheets %}{% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        {% include 'partials/_header.html.twig' %}
+
+        <main class="container">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash flash-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+        {% include 'partials/_footer.html.twig' %}
+    </body>
+</html>

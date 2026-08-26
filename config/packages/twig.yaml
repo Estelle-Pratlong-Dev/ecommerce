@@ -1,0 +1,9 @@
+twig:
+    file_name_pattern: '*.twig'
+    # Rend la config de la boutique disponible dans TOUS les templates via {{ shop.xxx }}
+    globals:
+        shop: '%shop%'
+
+when@test:
+    twig:
+        strict_variables: true

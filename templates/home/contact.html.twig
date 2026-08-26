@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact — {{ shop.name }}{% endblock %}
+
+{% block body %}
+    <h1 class="section-title">Nous contacter</h1>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:3rem;">
+        <div>
+            <h3>{{ shop.name }}</h3>
+            <p>{{ shop.description }}</p>
+            <p>
+                <strong>Adresse</strong><br>
+                {{ shop.address.street }}<br>
+                {{ shop.address.zipcode }} {{ shop.address.city }}<br>
+                {{ shop.address.country }}
+            </p>
+            <p>
+                <strong>Email :</strong> <a href="mailto:{{ shop.email }}">{{ shop.email }}</a><br>
+                <strong>Téléphone :</strong> {{ shop.phone }}
+            </p>
+        </div>
+
+        <div>
+            <p style="color:#64748b;">Le formulaire de contact pourra être branché sur le Mailer Symfony (déjà installé). Pour l'instant, écris-nous directement par e-mail.</p>
+        </div>
+    </div>
+{% endblock %}

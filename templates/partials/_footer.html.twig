@@ -1,0 +1,35 @@
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <div class="footer-col">
+            <h4>{{ shop.name }}</h4>
+            {% if shop.slogan %}<p>{{ shop.slogan }}</p>{% endif %}
+            <div class="socials">
+                {% if shop.social.facebook %}<a href="{{ shop.social.facebook }}" target="_blank" rel="noopener">Facebook</a>{% endif %}
+                {% if shop.social.instagram %}<a href="{{ shop.social.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
+                {% if shop.social.twitter %}<a href="{{ shop.social.twitter }}" target="_blank" rel="noopener">Twitter</a>{% endif %}
+                {% if shop.social.linkedin %}<a href="{{ shop.social.linkedin }}" target="_blank" rel="noopener">LinkedIn</a>{% endif %}
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Contact</h4>
+            <p>{{ shop.address.street }}<br>{{ shop.address.zipcode }} {{ shop.address.city }}<br>{{ shop.address.country }}</p>
+            <p><a href="mailto:{{ shop.email }}">{{ shop.email }}</a><br>{{ shop.phone }}</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>Liens</h4>
+            <nav class="footer-nav">
+                <a href="{{ path('app_catalog') }}">Boutique</a>
+                <a href="{{ path('app_contact') }}">Contact</a>
+                {% if app.user %}<a href="{{ path('app_account') }}">Mon compte</a>{% endif %}
+            </nav>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="container">
+            © {{ "now"|date("Y") }} {{ shop.name }} — {{ shop.footer_text }}
+        </div>
+    </div>
+</footer>

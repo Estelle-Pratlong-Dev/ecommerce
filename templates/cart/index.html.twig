@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon panier — {{ shop.name }}{% endblock %}
+
+{% block body %}
+    <h1 class="section-title">Mon panier</h1>
+
+    {% if cart.items is empty %}
+        <p>Votre panier est vide.</p>
+        <a href="{{ path('app_catalog') }}" class="btn">Voir la boutique</a>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Sous-total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('app_product', { slug: item.product.slug }) }}">{{ item.product.name }}</a>
+                        </td>
+                        <td>{{ item.product.priceCents|price }}</td>
+                        <td>
+                            <form method="post" action="{{ path('app_cart_update', { id: item.product.id }) }}"
+                                  style="display:flex; gap:0.4rem; align-items:center;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cart_update_' ~ item.product.id) }}">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}"
+                                       style="width:70px; padding:0.4rem; border:1px solid #cbd5e1; border-radius:6px;">
+                                <button class="btn-ghost" style="color:var(--color-primary);" type="submit">Mettre à jour</button>
+                            </form>
+                        </td>
+                        <td><strong>{{ item.subtotalCents|price }}</strong></td>
+                        <td>
+                            <form method="post" action="{{ path('app_cart_remove', { id: item.product.id }) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.product.id) }}">
+                                <button class="btn-ghost" style="color:#991b1b;" type="submit">✕ Retirer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align:right;"><strong>Total</strong></td>
+                    <td colspan="2"><strong style="font-size:1.3rem; color:var(--color-primary);">{{ cart.totalCents|price }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div style="display:flex; justify-content:space-between; margin-top:2rem;">
+            <a href="{{ path('app_catalog') }}" class="btn-ghost" style="color:var(--color-primary);">← Continuer mes achats</a>
+            <a href="{{ path('app_checkout') }}" class="btn btn-accent">Passer la commande</a>
+        </div>
+    {% endif %}
+{% endblock %}

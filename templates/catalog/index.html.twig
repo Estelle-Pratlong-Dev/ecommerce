@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boutique — {{ shop.name }}{% endblock %}
+
+{# Macro : un groupe de filtres sous forme de "pilules" à cocher #}
+{% macro filter_group(title, name, values, selected) %}
+    {% if values is not empty %}
+        <div class="filter-group">
+            <h4>{{ title }}</h4>
+            <div class="filter-pills">
+                {% for value in values %}
+                    <label class="filter-pill">
+                        <input type="checkbox" name="{{ name }}[]" value="{{ value }}"
+                               {{ value in selected ? 'checked' : '' }}>
+                        <span>{{ value }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% block body %}
+    <h1 class="section-title">Boutique</h1>
+
+    <div class="catalog-layout" data-controller="filters">
+        {# ----- Panneau de filtres (gauche, repliable) ----- #}
+        <aside class="filter-panel">
+            <form method="get" action="{{ path('app_catalog') }}">
+                {# Barre toujours visible : bouton de pliage + recherche #}
+                <div class="filter-bar">
+                    <button type="button" class="filter-toggle" data-action="filters#toggle">
+                        <span>Filtres</span>
+                        <span data-filters-target="icon">▾</span>
+                    </button>
+                    <div class="filter-search-wrap">
+                        <input type="search" name="q" value="{{ selected.search }}" placeholder="Rechercher..." class="filter-search">
+                        <button type="submit" class="filter-search-btn" aria-label="Rechercher">🔍</button>
+                    </div>
+                </div>
+
+                <div class="filter-panel__body">
+                {% if enabled.category|default(false) %}
+                    {% if facets.categories is not empty %}
+                        <div class="filter-group">
+                            <h4>Catégorie</h4>
+                            <div class="filter-pills">
+                                {% for category in facets.categories %}
+                                    <label class="filter-pill">
+                                        <input type="checkbox" name="categorie[]" value="{{ category.slug }}"
+                                               {{ category.slug in selected.categories ? 'checked' : '' }}>
+                                        <span>{{ category.name }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if enabled.brand|default(false) and facets.brands is not empty %}
+                    <div class="filter-group">
+                        <h4>Marque</h4>
+                        <div class="filter-pills">
+                            {% for brand in facets.brands %}
+                                <label class="filter-pill">
+                                    <input type="checkbox" name="marque[]" value="{{ brand.slug }}"
+                                           {{ brand.slug in selected.brands ? 'checked' : '' }}>
+                                    <span>{{ brand.name }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if enabled.color|default(false) and facets.colors is not empty %}
+                    <div class="filter-group">
+                        <h4>Couleur</h4>
+                        <div class="filter-pills">
+                            {% for color in facets.colors %}
+                                <label class="filter-pill">
+                                    <input type="checkbox" name="couleur[]" value="{{ color.slug }}"
+                                           {{ color.slug in selected.colors ? 'checked' : '' }}>
+                                    <span>
+                                        {% if color.hex %}<i class="swatch" style="background:{{ color.hex }}"></i>{% endif %}{{ color.name }}
+                                    </span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if enabled.type|default(false) %}
+                    {{ _self.filter_group('Matière', 'type', facets.types, selected.types) }}
+                {% endif %}
+                {% if enabled.size|default(false) %}
+                    {{ _self.filter_group('Taille', 'taille', facets.sizes, selected.sizes) }}
+                {% endif %}
+
+                {% if enabled.featured|default(false) %}
+                    <div class="filter-group">
+                        <h4>Sélection</h4>
+                        <label class="filter-pill">
+                            <input type="checkbox" name="coupdecoeur" value="1" {{ selected.featured ? 'checked' : '' }}>
+                            <span>❤️ Coups de cœur</span>
+                        </label>
+                    </div>
+                {% endif %}
+
+                {% if enabled.price|default(false) %}
+                    <div class="filter-group">
+                        <h4>Prix ({{ shop.currency_symbol }})</h4>
+                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                            <input type="number" name="prix_min" value="{{ selected.priceMin }}" placeholder="Min" min="0" step="1"
+                                   style="width:50%; padding:0.45rem; border:1px solid #cbd5e1; border-radius:8px;">
+                            <span>—</span>
+                            <input type="number" name="prix_max" value="{{ selected.priceMax }}" placeholder="Max" min="0" step="1"
+                                   style="width:50%; padding:0.45rem; border:1px solid #cbd5e1; border-radius:8px;">
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn" style="width:100%;">Appliquer les filtres</button>
+                    <a href="{{ path('app_catalog') }}" class="filter-reset">Réinitialiser</a>
+                </div>
+                </div>{# /filter-panel__body #}
+            </form>
+        </aside>
+
+        {# ----- Produits ----- #}
+        <div class="catalog-main">
+            {% if products is empty %}
+                <p>Aucun produit ne correspond à ta recherche.</p>
+            {% else %}
+                <p style="color:#64748b; margin-top:0;">{{ products|length }} produit{{ products|length > 1 ? 's' : '' }}</p>
+                <div class="product-grid">
+                    {% for product in products %}
+                        {% include 'catalog/_card.html.twig' with { product: product } %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

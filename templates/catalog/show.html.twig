@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} — {{ shop.name }}{% endblock %}
+{% block meta_description %}{{ product.description|default(product.name)|striptags|slice(0, 160) }}{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('app_catalog') }}">← Retour à la boutique</a></p>
+
+    <div class="product-detail">
+        <div>
+            <div class="gallery">
+                {% if product.mainImage %}
+                    <img src="{{ asset(product.mainImage.path) }}" alt="{{ product.mainImage.alt|default(product.name) }}">
+                {% else %}
+                    <span class="placeholder" style="font-size:5rem; opacity:.3;">🛍️</span>
+                {% endif %}
+            </div>
+            {% if product.images|length > 1 %}
+                <div style="display:flex; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap;">
+                    {% for image in product.images %}
+                        <img src="{{ asset(image.path) }}" alt="{{ image.alt|default(product.name) }}"
+                             style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;">
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div>
+            {% if product.category %}
+                <p><a href="{{ path('app_catalog', { 'categorie[]': product.category.slug }) }}">{{ product.category.name }}</a></p>
+            {% endif %}
+            <h1>{{ product.name }}</h1>
+            <p class="price-lg">{{ product.priceCents|price }}</p>
+
+            {% if product.description %}
+                <div style="margin:1.5rem 0;">{{ product.description|nl2br }}</div>
+            {% endif %}
+
+            {% if product.brand or product.color or product.type or product.size %}
+                <ul style="list-style:none; padding:0; margin:1rem 0; color:#475569;">
+                    {% if product.brand %}<li><strong>Marque :</strong> {{ product.brand.name }}</li>{% endif %}
+                    {% if product.color %}<li><strong>Couleur :</strong> {{ product.color.name }}</li>{% endif %}
+                    {% if product.type %}<li><strong>Matière :</strong> {{ product.type }}</li>{% endif %}
+                    {% if product.size %}<li><strong>Taille :</strong> {{ product.size }}</li>{% endif %}
+                </ul>
+            {% endif %}
+
+            {% if product.inStock %}
+                <p style="color:#166534;">✓ En stock ({{ product.stock }} disponible{{ product.stock > 1 ? 's' : '' }})</p>
+                <form method="post" action="{{ path('app_cart_add', { id: product.id }) }}"
+                      style="display:flex; gap:0.75rem; align-items:center; margin-top:1rem;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}"
+                           style="width:80px; padding:0.6rem; border:1px solid #cbd5e1; border-radius:8px;">
+                    <button class="btn" type="submit">Ajouter au panier</button>
+                </form>
+            {% else %}
+                <p style="color:#991b1b; font-weight:600;">Rupture de stock</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

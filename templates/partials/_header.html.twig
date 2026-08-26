@@ -1,0 +1,29 @@
+<header class="site-header">
+    <div class="container header-inner">
+        <a href="{{ path('app_home') }}" class="brand">
+            {% if shop.logo %}
+                <img src="{{ asset(shop.logo) }}" alt="{{ shop.name }}" class="brand-logo">
+            {% else %}
+                <span class="brand-name">{{ shop.name }}</span>
+            {% endif %}
+        </a>
+
+        <nav class="main-nav">
+            <a href="{{ path('app_home') }}">Accueil</a>
+            <a href="{{ path('app_catalog') }}">Boutique</a>
+            <a href="{{ path('app_contact') }}">Contact</a>
+        </nav>
+
+        <div class="header-actions">
+            {% if app.user %}
+                <a href="{{ path('app_account') }}" class="btn-ghost">Mon compte</a>
+                <a href="{{ path('app_logout') }}" class="btn-ghost">Déconnexion</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn-ghost">Connexion</a>
+            {% endif %}
+            <a href="{{ path('app_cart') }}" class="btn-cart" aria-label="Panier">
+                🛒 <span class="cart-count">{{ cart_count() }}</span>
+            </a>
+        </div>
+    </div>
+</header>

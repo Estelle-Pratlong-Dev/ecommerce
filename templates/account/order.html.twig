@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande {{ order.reference }} — {{ shop.name }}{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('app_account') }}">← Retour à mon compte</a></p>
+
+    <h1 class="section-title">Commande {{ order.reference }}</h1>
+    <p>
+        <strong>Date :</strong> {{ order.createdAt|date('d/m/Y à H:i') }}<br>
+        <strong>Statut :</strong> {{ order.statusLabel }}
+    </p>
+
+    {% if order.shippingAddress %}
+        <p><strong>Adresse de livraison :</strong><br>{{ order.shippingAddress|nl2br }}</p>
+    {% endif %}
+
+    <table class="table">
+        <thead>
+            <tr><th>Produit</th><th>Prix unitaire</th><th>Quantité</th><th>Sous-total</th></tr>
+        </thead>
+        <tbody>
+            {% for item in order.items %}
+                <tr>
+                    <td>{{ item.productName }}</td>
+                    <td>{{ item.unitPriceCents|price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.subtotalCents|price }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" style="text-align:right;"><strong>Total</strong></td>
+                <td><strong style="color:var(--color-primary);">{{ order.totalCents|price }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}

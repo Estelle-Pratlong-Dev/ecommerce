@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte — {{ shop.name }}{% endblock %}
+
+{% block body %}
+    <div class="form-card">
+        <h1 style="margin-top:0;">Créer un compte</h1>
+
+        {{ form_start(registrationForm) }}
+            <div class="form-row">
+                {{ form_label(registrationForm.firstName) }}
+                {{ form_widget(registrationForm.firstName) }}
+            </div>
+            <div class="form-row">
+                {{ form_label(registrationForm.lastName) }}
+                {{ form_widget(registrationForm.lastName) }}
+            </div>
+            <div class="form-row">
+                {{ form_label(registrationForm.email) }}
+                {{ form_widget(registrationForm.email) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+            <div class="form-row">
+                {{ form_label(registrationForm.plainPassword) }}
+                {{ form_widget(registrationForm.plainPassword) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <button class="btn" type="submit" style="width:100%;">Créer mon compte</button>
+        {{ form_end(registrationForm) }}
+
+        <p style="margin-top:1.5rem; text-align:center;">
+            Déjà inscrit ? <a href="{{ path('app_login') }}">Se connecter</a>
+        </p>
+    </div>
+{% endblock %}

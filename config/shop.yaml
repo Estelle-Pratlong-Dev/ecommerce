@@ -1,0 +1,66 @@
+# =============================================================================
+#  CONFIGURATION CENTRALE DE LA BOUTIQUE
+# =============================================================================
+#  C'est LE seul fichier à modifier pour personnaliser le site :
+#  nom de la société, coordonnées, couleurs, logo, réseaux sociaux...
+#
+#  Après chaque modification, vide le cache si besoin :  php bin/console cache:clear
+# =============================================================================
+
+parameters:
+    shop:
+
+        # --- Identité de la société -------------------------------------------
+        name:        'Ma Boutique'                 # Nom affiché partout
+        slogan:      'La qualité à portée de clic'  # Petite phrase d'accroche
+        description: 'Boutique en ligne créée avec Symfony.' # Pour le SEO (balise meta)
+
+        # Le logo : un fichier dans public/images/ (laisse vide pour afficher le nom en texte)
+        logo:        ''                            # ex: 'images/logo.png'
+
+        # --- Coordonnées ------------------------------------------------------
+        email:       'contact@maboutique.fr'
+        phone:       '+33 6 00 00 00 00'
+        address:
+            street:  '1 rue de l''Exemple'
+            zipcode: '30160'
+            city:    'Gagnières'
+            country: 'France'
+
+        # --- Réseaux sociaux (laisse vide pour masquer le lien) ---------------
+        social:
+            facebook:  ''
+            instagram: ''
+            twitter:   ''
+            linkedin:  ''
+
+        # --- Couleurs / thème -------------------------------------------------
+        #  Ces couleurs sont injectées en variables CSS (--color-primary, etc.)
+        #  et utilisables partout dans le CSS et les templates.
+        theme:
+            primary:    '#2563eb'   # Couleur principale (boutons, liens, accents)
+            secondary:  '#1e293b'   # Couleur secondaire (en-tête, pied de page)
+            accent:     '#f59e0b'   # Couleur d'accent (promos, badges)
+            background: '#ffffff'   # Fond des pages
+            text:       '#1e293b'   # Couleur du texte
+            font:       "'Inter', system-ui, -apple-system, sans-serif"
+
+        # --- Commerce ---------------------------------------------------------
+        currency:        'EUR'      # Devise (EUR, USD, GBP...)
+        currency_symbol: '€'
+        vat_rate:        20         # Taux de TVA en % (à titre indicatif)
+
+        # --- Filtres de la boutique (panneau latéral) -------------------------
+        #  Mets "true" pour afficher un filtre, "false" pour le masquer.
+        #  Le libellé "type" est affiché "Matière" côté boutique.
+        filters:
+            category:   true   # Catégorie
+            brand:      true   # Marque
+            color:      true   # Couleur
+            type:       true   # Type / Matière
+            size:       true   # Taille
+            featured:   true   # Coup de cœur (cases à cocher)
+            price:      true   # Fourchette de prix (min / max)
+
+        # --- Pied de page -----------------------------------------------------
+        footer_text: 'Tous droits réservés.'

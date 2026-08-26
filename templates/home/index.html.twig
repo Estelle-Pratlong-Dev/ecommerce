@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ shop.name }} — {{ shop.slogan }}{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <h1>{{ shop.name }}</h1>
+        <p>{{ shop.slogan }}</p>
+        <a href="{{ path('app_catalog') }}" class="btn btn-accent">Découvrir la boutique</a>
+    </section>
+
+    {% if categories is not empty %}
+        <section style="margin-bottom: 3rem;">
+            <h2 class="section-title">Catégories</h2>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                {% for category in categories %}
+                    <a class="btn" href="{{ path('app_catalog', { 'categorie[]': category.slug }) }}">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section>
+        <h2 class="section-title">Nos produits phares</h2>
+        {% if featured is empty %}
+            <p>Aucun produit pour le moment. Ajoute-en depuis l'espace d'administration !</p>
+        {% else %}
+            <div class="product-grid">
+                {% for product in featured %}
+                    {% include 'catalog/_card.html.twig' with { product: product } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

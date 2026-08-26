@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes informations — {{ shop.name }}{% endblock %}
+
+{% block body %}
+    <h1 class="section-title">Mon compte</h1>
+
+    {% include 'account/_nav.html.twig' %}
+
+    <div class="form-card" style="margin:0; max-width:640px;">
+        <h2 style="margin-top:0;">Mes informations</h2>
+
+        {{ form_start(profileForm) }}
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-row">
+                    {{ form_label(profileForm.firstName) }}
+                    {{ form_widget(profileForm.firstName) }}
+                </div>
+                <div class="form-row">
+                    {{ form_label(profileForm.lastName) }}
+                    {{ form_widget(profileForm.lastName) }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                {{ form_label(profileForm.email) }}
+                {{ form_widget(profileForm.email) }}
+                {{ form_errors(profileForm.email) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(profileForm.phone) }}
+                {{ form_widget(profileForm.phone) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(profileForm.address) }}
+                {{ form_widget(profileForm.address) }}
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 2fr; gap:1rem;">
+                <div class="form-row">
+                    {{ form_label(profileForm.postalCode) }}
+                    {{ form_widget(profileForm.postalCode) }}
+                </div>
+                <div class="form-row">
+                    {{ form_label(profileForm.city) }}
+                    {{ form_widget(profileForm.city) }}
+                </div>
+            </div>
+
+            <button class="btn" type="submit">Enregistrer</button>
+        {{ form_end(profileForm) }}
+    </div>
+{% endblock %}
