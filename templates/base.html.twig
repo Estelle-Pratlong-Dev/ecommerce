@@ -7,6 +7,11 @@
         <meta name="description" content="{% block meta_description %}{{ shop.description }}{% endblock %}">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🛍️</text></svg>">
 
+        {# Polices web #}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
         {# Variables CSS générées depuis config/shop.yaml -> utilisables partout #}
         <style>
             :root {
@@ -15,7 +20,8 @@
                 --color-accent:     {{ shop.theme.accent }};
                 --color-background: {{ shop.theme.background }};
                 --color-text:       {{ shop.theme.text }};
-                --font-family:      {{ shop.theme.font|raw }};
+                --font-family:       {{ shop.theme.font|raw }};
+                --font-heading:      {{ shop.theme.font_heading|default(shop.theme.font)|raw }};
             }
         </style>
 
@@ -28,6 +34,8 @@
     <body>
         {% include 'partials/_header.html.twig' %}
 
+        {% block hero %}{% endblock %}
+
         <main class="container">
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
@@ -37,6 +45,8 @@
 
             {% block body %}{% endblock %}
         </main>
+
+        {% block outro %}{% endblock %}
 
         {% include 'partials/_footer.html.twig' %}
     </body>

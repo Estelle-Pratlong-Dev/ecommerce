@@ -43,7 +43,8 @@ parameters:
             accent:     '#f59e0b'   # Couleur d'accent (promos, badges)
             background: '#ffffff'   # Fond des pages
             text:       '#1e293b'   # Couleur du texte
-            font:       "'Inter', system-ui, -apple-system, sans-serif"
+            font:         "'Hanken Grotesk', system-ui, -apple-system, sans-serif"  # Police du texte
+            font_heading: "'Archivo', system-ui, sans-serif"                        # Police des titres
 
         # --- Commerce ---------------------------------------------------------
         currency:        'EUR'      # Devise (EUR, USD, GBP...)
@@ -61,6 +62,23 @@ parameters:
             size:       true   # Taille
             featured:   true   # Coup de cœur (cases à cocher)
             price:      true   # Fourchette de prix (min / max)
+
+        # --- Informations légales (mentions légales, CGV) ---------------------
+        #  À COMPLÉTER avant mise en ligne. Fais relire tes textes par un professionnel.
+        legal:
+            company_type: 'Auto-entreprise'          # Forme juridique (auto-entreprise, SARL, SAS...)
+            director:     'À compléter'               # Directeur / directrice de la publication
+            siret:        'À compléter'               # N° SIRET
+            vat_number:   ''                          # N° TVA intracommunautaire (si assujetti, sinon vide)
+            capital:      ''                          # Capital social (sociétés uniquement)
+            return_days:  14                          # Délai de rétractation légal (jours)
+            hosting:                                  # Hébergeur du site
+                name:    'À compléter'
+                address: 'À compléter'
+                phone:   ''
+
+        # --- Bandeau haut de page (laisse vide pour le masquer) ---------------
+        announcement: 'Paiement sécurisé · Livraison rapide · Retours sous 14 jours'
 
         # --- Pied de page -----------------------------------------------------
         footer_text: 'Tous droits réservés.'

@@ -56,6 +56,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $phone = null;
 
+    /** Hash SHA-256 du jeton de réinitialisation de mot de passe (jamais le jeton en clair). */
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $resetTokenHash = null;
+
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $resetTokenExpiresAt = null;
+
     /** @var Collection<int, Order> */
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Order::class)]
     private Collection $orders;
@@ -195,6 +202,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getResetTokenHash(): ?string
+    {
+        return $this->resetTokenHash;
+    }
+
+    public function setResetTokenHash(?string $resetTokenHash): static
+    {
+        $this->resetTokenHash = $resetTokenHash;
+
+        return $this;
+    }
+
+    public function getResetTokenExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->resetTokenExpiresAt;
+    }
+
+    public function setResetTokenExpiresAt(?\DateTimeImmutable $resetTokenExpiresAt): static
+    {
+        $this->resetTokenExpiresAt = $resetTokenExpiresAt;
+
+        return $this;
+    }
+
+    /** Le jeton de réinitialisation est-il encore valide (présent et non expiré) ? */
+    public function isResetTokenValid(): bool
+    {
+        return $this->resetTokenHash !== null
+            && $this->resetTokenExpiresAt !== null
+            && $this->resetTokenExpiresAt > new \DateTimeImmutable();
+    }
+
+    /** Efface le jeton de réinitialisation (après usage ou expiration). */
+    public function clearResetToken(): static
+    {
+        $this->resetTokenHash = null;
+        $this->resetTokenExpiresAt = null;
 
         return $this;
     }

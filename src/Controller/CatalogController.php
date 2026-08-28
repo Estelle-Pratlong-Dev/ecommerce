@@ -35,6 +35,19 @@ class CatalogController extends AbstractController
             'priceMax'   => $request->query->get('prix_max'),
         ];
 
+        // Tri et pagination
+        $allowedSorts = ['recent', 'price_asc', 'price_desc', 'name'];
+        $sort = $request->query->get('tri', 'recent');
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'recent';
+        }
+        $page = max(1, $request->query->getInt('page', 1));
+        $perPage = 12;
+
+        $paginator = $products->findByFilters($filters, $sort, $page, $perPage);
+        $total = count($paginator);
+        $totalPages = (int) ceil($total / $perPage);
+
         // Valeurs disponibles pour alimenter les boutons (seulement si le filtre est actif)
         $facets = [
             'categories' => ($enabled['category'] ?? false) ? $categories->findAll() : [],
@@ -45,10 +58,14 @@ class CatalogController extends AbstractController
         ];
 
         return $this->render('catalog/index.html.twig', [
-            'products'   => $products->findByFilters($filters),
-            'facets'     => $facets,
-            'enabled'    => $enabled,
-            'selected'   => $filters,
+            'products'    => $paginator,
+            'total'       => $total,
+            'currentPage' => $page,
+            'totalPages'  => $totalPages,
+            'sort'        => $sort,
+            'facets'      => $facets,
+            'enabled'     => $enabled,
+            'selected'    => $filters,
         ]);
     }
 

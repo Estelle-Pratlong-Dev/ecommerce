@@ -4,12 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Order;
 use App\Entity\User;
+use App\Form\ChangePasswordType;
 use App\Form\ProfileType;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -46,6 +49,33 @@ class AccountController extends AbstractController
 
         return $this->render('account/profile.html.twig', [
             'profileForm' => $form,
+        ]);
+    }
+
+    #[Route('/mot-de-passe', name: 'app_account_password')]
+    public function changePassword(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(ChangePasswordType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifie le mot de passe actuel
+            if (!$hasher->isPasswordValid($user, $form->get('currentPassword')->getData())) {
+                $form->get('currentPassword')->addError(new FormError('Mot de passe actuel incorrect.'));
+            } else {
+                $user->setPassword($hasher->hashPassword($user, $form->get('plainPassword')->getData()));
+                $em->flush();
+                $this->addFlash('success', 'Votre mot de passe a été mis à jour.');
+
+                return $this->redirectToRoute('app_account_password');
+            }
+        }
+
+        return $this->render('account/password.html.twig', [
+            'passwordForm' => $form,
         ]);
     }
 

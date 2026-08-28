@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{# MODÈLE RGPD à adapter — fais relire par un professionnel avant mise en ligne. #}
+
+{% block title %}Politique de confidentialité — {{ shop.name }}{% endblock %}
+
+{% block body %}
+<div class="legal-page">
+    <h1 class="section-title">Politique de confidentialité</h1>
+
+    <p>{{ shop.name }} accorde une grande importance à la protection de vos données personnelles. Cette page explique quelles données nous collectons et comment elles sont utilisées.</p>
+
+    <h2>Responsable du traitement</h2>
+    <p>{{ shop.name }} — {{ shop.address.street }}, {{ shop.address.zipcode }} {{ shop.address.city }}. Contact : <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>.</p>
+
+    <h2>Données collectées</h2>
+    <p>Nous collectons les données que vous nous fournissez : nom, prénom, adresse e-mail, adresse postale, téléphone, ainsi que l'historique de vos commandes.</p>
+
+    <h2>Finalités</h2>
+    <ul>
+        <li>Gestion de votre compte client ;</li>
+        <li>Traitement et suivi de vos commandes ;</li>
+        <li>Envoi des e-mails liés à vos commandes ;</li>
+        <li>Réponse à vos demandes via le formulaire de contact.</li>
+    </ul>
+
+    <h2>Base légale</h2>
+    <p>Le traitement repose sur l'exécution du contrat de vente et, le cas échéant, sur votre consentement.</p>
+
+    <h2>Durée de conservation</h2>
+    <p>Vos données sont conservées le temps nécessaire à la gestion de la relation commerciale, puis archivées conformément aux obligations légales.</p>
+
+    <h2>Vos droits</h2>
+    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité de vos données. Pour les exercer, écrivez à <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>.</p>
+
+    <h2>Cookies</h2>
+    <p>Ce site utilise uniquement des cookies techniques nécessaires à son fonctionnement (session, sécurité). Aucun cookie publicitaire ou de suivi tiers n'est déposé.</p>
+
+    <p style="color:#94a3b8; font-size:0.9rem; margin-top:2rem;">Dernière mise à jour : {{ "now"|date("d/m/Y") }}.</p>
+</div>
+{% endblock %}

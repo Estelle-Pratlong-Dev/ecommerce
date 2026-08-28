@@ -117,8 +117,18 @@
                     </div>
                 {% endif %}
 
+                <div class="filter-group">
+                    <h4>Trier par</h4>
+                    <select name="tri" style="width:100%; padding:0.5rem; border:1px solid #cbd5e1; border-radius:8px;">
+                        <option value="recent"     {{ sort == 'recent' ? 'selected' : '' }}>Nouveautés</option>
+                        <option value="price_asc"  {{ sort == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
+                        <option value="price_desc" {{ sort == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                        <option value="name"       {{ sort == 'name' ? 'selected' : '' }}>Nom (A→Z)</option>
+                    </select>
+                </div>
+
                 <div class="filter-actions">
-                    <button type="submit" class="btn" style="width:100%;">Appliquer les filtres</button>
+                    <button type="submit" class="btn" style="width:100%;">Appliquer</button>
                     <a href="{{ path('app_catalog') }}" class="filter-reset">Réinitialiser</a>
                 </div>
                 </div>{# /filter-panel__body #}
@@ -127,15 +137,33 @@
 
         {# ----- Produits ----- #}
         <div class="catalog-main">
-            {% if products is empty %}
+            {% if total == 0 %}
                 <p>Aucun produit ne correspond à ta recherche.</p>
             {% else %}
-                <p style="color:#64748b; margin-top:0;">{{ products|length }} produit{{ products|length > 1 ? 's' : '' }}</p>
+                <p style="color:#64748b; margin-top:0;">{{ total }} produit{{ total > 1 ? 's' : '' }}</p>
                 <div class="product-grid">
                     {% for product in products %}
                         {% include 'catalog/_card.html.twig' with { product: product } %}
                     {% endfor %}
                 </div>
+
+                {% if totalPages > 1 %}
+                    <nav class="pagination">
+                        {% if currentPage > 1 %}
+                            <a href="{{ path('app_catalog', app.request.query.all|merge({ page: currentPage - 1 })) }}">← Précédent</a>
+                        {% endif %}
+                        {% for p in 1..totalPages %}
+                            {% if p == currentPage %}
+                                <span class="current">{{ p }}</span>
+                            {% else %}
+                                <a href="{{ path('app_catalog', app.request.query.all|merge({ page: p })) }}">{{ p }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if currentPage < totalPages %}
+                            <a href="{{ path('app_catalog', app.request.query.all|merge({ page: currentPage + 1 })) }}">Suivant →</a>
+                        {% endif %}
+                    </nav>
+                {% endif %}
             {% endif %}
         </div>
     </div>

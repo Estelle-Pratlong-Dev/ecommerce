@@ -1,0 +1,15 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block content %}
+    <h1 style="margin:0 0 16px; font-size:22px;">Nouveau message de contact</h1>
+    <p style="margin:0 0 8px; line-height:1.6;">
+        <strong>De :</strong> {{ data.name }} ({{ data.email }})<br>
+        <strong>Sujet :</strong> {{ data.subject }}
+    </p>
+    <div style="margin:16px 0; padding:16px; background:#f8fafc; border-radius:8px; line-height:1.6;">
+        {{ data.message|nl2br }}
+    </div>
+    <p style="margin:16px 0 0; color:#64748b; font-size:13px;">
+        Réponds directement à cet e-mail pour recontacter {{ data.name }}.
+    </p>
+{% endblock %}

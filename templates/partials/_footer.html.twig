@@ -25,6 +25,15 @@
                 {% if app.user %}<a href="{{ path('app_account') }}">Mon compte</a>{% endif %}
             </nav>
         </div>
+
+        <div class="footer-col">
+            <h4>Informations</h4>
+            <nav class="footer-nav">
+                <a href="{{ path('app_legal_notice') }}">Mentions légales</a>
+                <a href="{{ path('app_terms') }}">CGV</a>
+                <a href="{{ path('app_privacy') }}">Politique de confidentialité</a>
+            </nav>
+        </div>
     </div>
 
     <div class="footer-bottom">

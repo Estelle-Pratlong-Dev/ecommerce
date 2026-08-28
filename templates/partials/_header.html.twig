@@ -1,3 +1,7 @@
+{% if shop.announcement %}
+    <div class="announce">{{ shop.announcement }}</div>
+{% endif %}
+
 <header class="site-header">
     <div class="container header-inner">
         <a href="{{ path('app_home') }}" class="brand">
@@ -15,15 +19,29 @@
         </nav>
 
         <div class="header-actions">
-            {% if app.user %}
-                <a href="{{ path('app_account') }}" class="btn-ghost">Mon compte</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('admin') }}" class="btn-ghost">Admin</a>
+                <a href="{{ path('app_logout') }}" class="btn-ghost">Déconnexion</a>
+            {% elseif app.user %}
+                <a href="{{ path('app_account') }}" class="btn-ghost">Compte</a>
                 <a href="{{ path('app_logout') }}" class="btn-ghost">Déconnexion</a>
             {% else %}
                 <a href="{{ path('app_login') }}" class="btn-ghost">Connexion</a>
             {% endif %}
             <a href="{{ path('app_cart') }}" class="btn-cart" aria-label="Panier">
-                🛒 <span class="cart-count">{{ cart_count() }}</span>
+                Panier <span class="cart-count">{{ cart_count() }}</span>
             </a>
         </div>
     </div>
+
+    {% set categories = shop_categories() %}
+    {% if categories is not empty %}
+        <nav class="cat-nav">
+            <div class="container cat-nav-inner">
+                {% for category in categories %}
+                    <a href="{{ path('app_catalog', { 'categorie[]': category.slug }) }}">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </nav>
+    {% endif %}
 </header>

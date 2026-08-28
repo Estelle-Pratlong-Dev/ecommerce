@@ -1,0 +1,21 @@
+{% extends 'emails/_layout.html.twig' %}
+
+{% block content %}
+    <h1 style="margin:0 0 16px; font-size:22px;">Votre commande est en route ! 📦</h1>
+    <p style="margin:0 0 8px; line-height:1.6;">
+        Bonjour {{ order.customer.firstName|default('') }},<br>
+        Bonne nouvelle : votre commande <strong>{{ order.reference }}</strong> vient d'être <strong>expédiée</strong>.
+    </p>
+
+    {% include 'emails/_order_items.html.twig' %}
+
+    {% if order.shippingAddress %}
+        <p style="margin:16px 0 4px; font-weight:bold;">Livraison à</p>
+        <p style="margin:0; line-height:1.6; color:#475569;">{{ order.shippingAddress|nl2br }}</p>
+    {% endif %}
+
+    <p style="margin:24px 0 0; line-height:1.6;">
+        Merci pour votre confiance,<br>
+        <strong>L'équipe {{ shop.name }}</strong>
+    </p>
+{% endblock %}

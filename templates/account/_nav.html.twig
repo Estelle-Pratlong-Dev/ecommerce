@@ -1,13 +1,26 @@
 {% set current = app.request.attributes.get('_route') %}
-<nav style="display:flex; gap:0.5rem; margin-bottom:2rem; border-bottom:1px solid #e2e8f0;">
-    <a href="{{ path('app_account') }}"
-       style="padding:0.6rem 1rem; text-decoration:none; font-weight:600;
-              {{ current starts with 'app_account' and current != 'app_account_profile' ? 'color:var(--color-primary); border-bottom:3px solid var(--color-primary);' : 'color:#64748b;' }}">
-        Mes commandes
-    </a>
-    <a href="{{ path('app_account_profile') }}"
-       style="padding:0.6rem 1rem; text-decoration:none; font-weight:600;
-              {{ current == 'app_account_profile' ? 'color:var(--color-primary); border-bottom:3px solid var(--color-primary);' : 'color:#64748b;' }}">
-        Mes informations
-    </a>
+{% set on_orders = current in ['app_account', 'app_account_order'] %}
+<nav style="display:flex; gap:0.5rem; margin-bottom:2rem; border-bottom:1px solid #e2e8f0; flex-wrap:wrap;">
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('admin') }}"
+           style="padding:0.6rem 1rem; text-decoration:none; font-weight:600; color:var(--color-primary); border-bottom:3px solid var(--color-primary);">
+            ← Panneau d'administration
+        </a>
+    {% else %}
+        <a href="{{ path('app_account') }}"
+           style="padding:0.6rem 1rem; text-decoration:none; font-weight:600;
+                  {{ on_orders ? 'color:var(--color-primary); border-bottom:3px solid var(--color-primary);' : 'color:#64748b;' }}">
+            Mes commandes
+        </a>
+        <a href="{{ path('app_account_profile') }}"
+           style="padding:0.6rem 1rem; text-decoration:none; font-weight:600;
+                  {{ current == 'app_account_profile' ? 'color:var(--color-primary); border-bottom:3px solid var(--color-primary);' : 'color:#64748b;' }}">
+            Mes informations
+        </a>
+        <a href="{{ path('app_account_password') }}"
+           style="padding:0.6rem 1rem; text-decoration:none; font-weight:600;
+                  {{ current == 'app_account_password' ? 'color:var(--color-primary); border-bottom:3px solid var(--color-primary);' : 'color:#64748b;' }}">
+            Mot de passe
+        </a>
+    {% endif %}
 </nav>

@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use App\Repository\CategoryRepository;
 use App\Service\CartService;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -17,6 +18,7 @@ class AppExtension extends AbstractExtension
     /** @param array<string,mixed> $shop Configuration centrale (config/shop.yaml) */
     public function __construct(
         private readonly CartService $cartService,
+        private readonly CategoryRepository $categoryRepository,
         array $shop,
     ) {
         $this->currencySymbol = $shop['currency_symbol'] ?? '€';
@@ -26,6 +28,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('cart_count', [$this, 'cartCount']),
+            new TwigFunction('shop_categories', [$this, 'shopCategories']),
         ];
     }
 
@@ -42,6 +45,12 @@ class AppExtension extends AbstractExtension
     public function cartCount(): int
     {
         return $this->cartService->getTotalQuantity();
+    }
+
+    /** @return \App\Entity\Category[] Toutes les catégories (pour la barre de navigation). */
+    public function shopCategories(): array
+    {
+        return $this->categoryRepository->findBy([], ['name' => 'ASC']);
     }
 
     public function formatPriceFromCents(int $cents): string

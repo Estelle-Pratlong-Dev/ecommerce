@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{# MODÈLE à adapter — fais relire par un professionnel avant mise en ligne. #}
+
+{% block title %}Mentions légales — {{ shop.name }}{% endblock %}
+
+{% block body %}
+<div class="legal-page">
+    <h1 class="section-title">Mentions légales</h1>
+
+    <h2>Éditeur du site</h2>
+    <p>
+        Le site <strong>{{ shop.name }}</strong> est édité par {{ shop.name }} ({{ shop.legal.company_type }}).<br>
+        Adresse : {{ shop.address.street }}, {{ shop.address.zipcode }} {{ shop.address.city }}, {{ shop.address.country }}.<br>
+        E-mail : <a href="mailto:{{ shop.email }}">{{ shop.email }}</a> — Téléphone : {{ shop.phone }}.
+    </p>
+    <p>
+        SIRET : {{ shop.legal.siret }}.
+        {% if shop.legal.vat_number %}<br>N° TVA intracommunautaire : {{ shop.legal.vat_number }}.{% endif %}
+        {% if shop.legal.capital %}<br>Capital social : {{ shop.legal.capital }}.{% endif %}
+    </p>
+
+    <h2>Directeur de la publication</h2>
+    <p>{{ shop.legal.director }}.</p>
+
+    <h2>Hébergement</h2>
+    <p>
+        Le site est hébergé par : {{ shop.legal.hosting.name }}.<br>
+        {{ shop.legal.hosting.address }}{% if shop.legal.hosting.phone %} — {{ shop.legal.hosting.phone }}{% endif %}.
+    </p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>
+        L'ensemble des contenus (textes, images, logos) présents sur ce site est, sauf mention contraire,
+        la propriété de {{ shop.name }}. Toute reproduction sans autorisation est interdite.
+    </p>
+
+    <h2>Contact</h2>
+    <p>Pour toute question, écrivez-nous à <a href="mailto:{{ shop.email }}">{{ shop.email }}</a> ou via la <a href="{{ path('app_contact') }}">page de contact</a>.</p>
+
+    <p style="color:#94a3b8; font-size:0.9rem; margin-top:2rem;">Dernière mise à jour : {{ "now"|date("d/m/Y") }}.</p>
+</div>
+{% endblock %}

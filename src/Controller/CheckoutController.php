@@ -7,6 +7,7 @@ use App\Entity\OrderItem;
 use App\Entity\User;
 use App\Repository\OrderRepository;
 use App\Service\CartService;
+use App\Service\OrderMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
@@ -103,13 +104,13 @@ class CheckoutController extends AbstractController
     }
 
     #[Route('/succes/{order}', name: 'app_checkout_success')]
-    public function success(Order $order, CartService $cart, EntityManagerInterface $em): Response
+    public function success(Order $order, CartService $cart, EntityManagerInterface $em, OrderMailer $orderMailer): Response
     {
         if ($order->getCustomer() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
         }
 
-        // Marque la commande payée + décrémente le stock (une seule fois).
+        // Marque la commande payée + décrémente le stock + envoie les e-mails (une seule fois).
         if ($order->getStatus() === Order::STATUS_PENDING) {
             $order->setStatus(Order::STATUS_PAID);
             foreach ($order->getItems() as $item) {
@@ -120,6 +121,8 @@ class CheckoutController extends AbstractController
             }
             $em->flush();
             $cart->clear();
+
+            $orderMailer->sendOrderPlaced($order);
         }
 
         return $this->render('checkout/success.html.twig', ['order' => $order]);

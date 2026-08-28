@@ -2,26 +2,25 @@
 
 {% block title %}{{ shop.name }} — {{ shop.slogan }}{% endblock %}
 
-{% block body %}
+{% block hero %}
     <section class="hero">
-        <h1>{{ shop.name }}</h1>
-        <p>{{ shop.slogan }}</p>
-        <a href="{{ path('app_catalog') }}" class="btn btn-accent">Découvrir la boutique</a>
+        <div class="hero-inner">
+            <div class="eyebrow">La boutique</div>
+            <h1>{{ shop.name }}</h1>
+            {% if shop.slogan %}<p>{{ shop.slogan }}</p>{% endif %}
+            <a href="{{ path('app_catalog') }}" class="link-cta">Découvrir la boutique →</a>
+        </div>
     </section>
+{% endblock %}
 
-    {% if categories is not empty %}
-        <section style="margin-bottom: 3rem;">
-            <h2 class="section-title">Catégories</h2>
-            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-                {% for category in categories %}
-                    <a class="btn" href="{{ path('app_catalog', { 'categorie[]': category.slug }) }}">{{ category.name }}</a>
-                {% endfor %}
-            </div>
-        </section>
-    {% endif %}
-
+{% block body %}
     <section>
-        <h2 class="section-title">Nos produits phares</h2>
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:1rem;">
+            <h2 class="section-title" style="margin-bottom:0;">Nos produits phares</h2>
+            <a href="{{ path('app_catalog') }}" class="btn-ghost">Tout voir</a>
+        </div>
+        <div style="height:2rem;"></div>
+
         {% if featured is empty %}
             <p>Aucun produit pour le moment. Ajoute-en depuis l'espace d'administration !</p>
         {% else %}
@@ -31,5 +30,15 @@
                 {% endfor %}
             </div>
         {% endif %}
+    </section>
+{% endblock %}
+
+{% block outro %}
+    <section class="trust">
+        <div class="trust-inner">
+            <div class="trust-item"><b>Livraison rapide</b><small>Expédié avec soin</small></div>
+            <div class="trust-item"><b>Paiement sécurisé</b><small>Carte bancaire via Stripe</small></div>
+            <div class="trust-item"><b>Retours {{ shop.legal.return_days }} jours</b><small>Satisfait ou remboursé</small></div>
+        </div>
     </section>
 {% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Brand;
 use App\Entity\Color;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,14 +44,13 @@ class ProductRepository extends ServiceEntityRepository
      *   priceMax    => float (euros)
      *
      * @param array<string,mixed> $filters
-     * @return Product[]
+     * @return Paginator<Product>
      */
-    public function findByFilters(array $filters = []): array
+    public function findByFilters(array $filters = [], string $sort = 'recent', int $page = 1, int $perPage = 12): Paginator
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
-            ->andWhere('p.active = true')
-            ->orderBy('p.createdAt', 'DESC');
+            ->andWhere('p.active = true');
 
         if (!empty($filters['search'])) {
             $qb->andWhere('p.name LIKE :q OR p.description LIKE :q')
@@ -99,7 +99,20 @@ class ProductRepository extends ServiceEntityRepository
                ->setParameter('pmax', (int) round((float) $filters['priceMax'] * 100));
         }
 
-        return $qb->getQuery()->getResult();
+        // Tri
+        match ($sort) {
+            'price_asc'  => $qb->orderBy('p.priceCents', 'ASC'),
+            'price_desc' => $qb->orderBy('p.priceCents', 'DESC'),
+            'name'       => $qb->orderBy('p.name', 'ASC'),
+            default      => $qb->orderBy('p.createdAt', 'DESC'), // 'recent'
+        };
+
+        // Pagination
+        $page = max(1, $page);
+        $qb->setFirstResult(($page - 1) * $perPage)
+           ->setMaxResults($perPage);
+
+        return new Paginator($qb->getQuery(), fetchJoinCollection: false);
     }
 
     /**
