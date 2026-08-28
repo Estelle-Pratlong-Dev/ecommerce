@@ -17,3 +17,5 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Dossier de configuration de l'outil (ne pas versionner)
