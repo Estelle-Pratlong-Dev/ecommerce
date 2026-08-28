@@ -48,6 +48,18 @@ class Order
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $stripeSessionId = null;
 
+    /** Frais de port figés (centimes). */
+    #[ORM\Column]
+    private int $shippingCents = 0;
+
+    /** Remise figée (centimes). */
+    #[ORM\Column]
+    private int $discountCents = 0;
+
+    /** Code promo appliqué (figé). */
+    #[ORM\Column(length: 40, nullable: true)]
+    private ?string $promoCode = null;
+
     #[ORM\ManyToOne(inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $customer = null;
@@ -159,8 +171,44 @@ class Order
         return $this;
     }
 
-    /** Total de la commande en centimes. */
-    public function getTotalCents(): int
+    public function getShippingCents(): int
+    {
+        return $this->shippingCents;
+    }
+
+    public function setShippingCents(int $shippingCents): static
+    {
+        $this->shippingCents = $shippingCents;
+
+        return $this;
+    }
+
+    public function getDiscountCents(): int
+    {
+        return $this->discountCents;
+    }
+
+    public function setDiscountCents(int $discountCents): static
+    {
+        $this->discountCents = $discountCents;
+
+        return $this;
+    }
+
+    public function getPromoCode(): ?string
+    {
+        return $this->promoCode;
+    }
+
+    public function setPromoCode(?string $promoCode): static
+    {
+        $this->promoCode = $promoCode;
+
+        return $this;
+    }
+
+    /** Sous-total des articles (centimes), avant remise et livraison. */
+    public function getItemsTotalCents(): int
     {
         $total = 0;
         foreach ($this->items as $item) {
@@ -168,6 +216,12 @@ class Order
         }
 
         return $total;
+    }
+
+    /** Total de la commande : articles − remise + livraison (centimes). */
+    public function getTotalCents(): int
+    {
+        return max(0, $this->getItemsTotalCents() - $this->discountCents) + $this->shippingCents;
     }
 
     /** Total en euros (float) pour l'affichage. */

@@ -22,40 +22,79 @@
             <tbody>
                 {% for item in cart.items %}
                     <tr>
-                        <td>
-                            <a href="{{ path('app_product', { slug: item.product.slug }) }}">{{ item.product.name }}</a>
-                        </td>
+                        <td><a href="{{ path('app_product', { slug: item.product.slug }) }}">{{ item.product.name }}</a></td>
                         <td>{{ item.product.priceCents|price }}</td>
                         <td>
                             <form method="post" action="{{ path('app_cart_update', { id: item.product.id }) }}"
                                   style="display:flex; gap:0.4rem; align-items:center;">
                                 <input type="hidden" name="_token" value="{{ csrf_token('cart_update_' ~ item.product.id) }}">
                                 <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}"
-                                       style="width:70px; padding:0.4rem; border:1px solid #cbd5e1; border-radius:6px;">
-                                <button class="btn-ghost" style="color:var(--color-primary);" type="submit">Mettre à jour</button>
+                                       style="width:70px; padding:0.4rem; border:1px solid #cbd5e1;">
+                                <button class="btn-ghost" type="submit">Mettre à jour</button>
                             </form>
                         </td>
                         <td><strong>{{ item.subtotalCents|price }}</strong></td>
                         <td>
                             <form method="post" action="{{ path('app_cart_remove', { id: item.product.id }) }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.product.id) }}">
-                                <button class="btn-ghost" style="color:#991b1b;" type="submit">✕ Retirer</button>
+                                <button class="btn-ghost" style="color:#b42318;" type="submit">✕ Retirer</button>
                             </form>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3" style="text-align:right;"><strong>Total</strong></td>
-                    <td colspan="2"><strong style="font-size:1.3rem; color:var(--color-primary);">{{ cart.totalCents|price }}</strong></td>
-                </tr>
-            </tfoot>
         </table>
 
-        <div style="display:flex; justify-content:space-between; margin-top:2rem;">
-            <a href="{{ path('app_catalog') }}" class="btn-ghost" style="color:var(--color-primary);">← Continuer mes achats</a>
-            <a href="{{ path('app_checkout') }}" class="btn btn-accent">Passer la commande</a>
+        <div style="display:grid; grid-template-columns:1fr 340px; gap:2rem; margin-top:2rem; align-items:start;">
+            {# --- Code promo --- #}
+            <div class="form-card" style="margin:0; max-width:none;">
+                <h3 style="margin-top:0;">Code promo</h3>
+                {% if cart.promo %}
+                    <p>Code <strong>{{ cart.promo.code }}</strong> appliqué
+                        {% if cart.discountCents == 0 %}<br><small style="color:#b42318;">(minimum de commande non atteint)</small>{% endif %}
+                    </p>
+                    <form method="post" action="{{ path('app_cart_promo_remove') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('cart_promo_remove') }}">
+                        <button class="btn-ghost" style="color:#b42318;" type="submit">Retirer le code</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{{ path('app_cart_promo') }}" style="display:flex; gap:0.5rem;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('cart_promo') }}">
+                        <input type="text" name="code" placeholder="Votre code" style="flex:1; padding:0.6rem 0.7rem; border:1px solid #cbd5e1;">
+                        <button class="btn" type="submit">Appliquer</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            {# --- Récapitulatif --- #}
+            <div class="form-card" style="margin:0;">
+                <h3 style="margin-top:0;">Récapitulatif</h3>
+                <div style="display:flex; justify-content:space-between; padding:0.35rem 0;">
+                    <span>Sous-total</span><span>{{ cart.subtotalCents|price }}</span>
+                </div>
+                {% if cart.discountCents > 0 %}
+                    <div style="display:flex; justify-content:space-between; padding:0.35rem 0; color:#067647;">
+                        <span>Remise</span><span>− {{ cart.discountCents|price }}</span>
+                    </div>
+                {% endif %}
+                <div style="display:flex; justify-content:space-between; padding:0.35rem 0;">
+                    <span>Livraison</span>
+                    <span>{% if cart.shippingCents == 0 %}<strong style="color:#067647;">Offerte</strong>{% else %}{{ cart.shippingCents|price }}{% endif %}</span>
+                </div>
+                {% if cart.shippingCents > 0 and cart.freeShippingFromCents > 0 %}
+                    <p style="font-size:0.82rem; color:#64748b; margin:0.4rem 0;">
+                        Plus que {{ (cart.freeShippingFromCents - cart.subtotalCents)|price }} pour la livraison offerte.
+                    </p>
+                {% endif %}
+                <div style="display:flex; justify-content:space-between; border-top:1px solid #e2e8f0; margin-top:0.5rem; padding-top:0.75rem; font-size:1.2rem;">
+                    <strong>Total</strong><strong style="color:var(--color-primary);">{{ cart.totalCents|price }}</strong>
+                </div>
+                <a href="{{ path('app_checkout') }}" class="btn btn-accent" style="width:100%; margin-top:1.25rem;">Passer la commande</a>
+            </div>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+            <a href="{{ path('app_catalog') }}" class="btn-ghost">← Continuer mes achats</a>
         </div>
     {% endif %}
 {% endblock %}

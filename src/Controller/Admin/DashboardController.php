@@ -44,6 +44,10 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Ventes');
         yield MenuItem::linkTo(OrderCrudController::class, 'Commandes', 'fa fa-shopping-cart');
         yield MenuItem::linkTo(UserCrudController::class, 'Clients', 'fa fa-users');
+        yield MenuItem::linkTo(PromoCrudController::class, 'Codes promo', 'fa fa-percent');
+
+        yield MenuItem::section('Réglages');
+        yield MenuItem::linkTo(SettingCrudController::class, 'Livraison', 'fa fa-truck');
 
         yield MenuItem::section();
         yield MenuItem::linkToRoute('Retour au site', 'fa fa-arrow-left', 'app_home');

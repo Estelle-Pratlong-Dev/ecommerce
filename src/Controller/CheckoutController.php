@@ -65,6 +65,11 @@ class CheckoutController extends AbstractController
             $order->addItem($item);
         }
 
+        // Fige la livraison et la remise sur la commande.
+        $order->setShippingCents($details['shippingCents']);
+        $order->setDiscountCents($details['discountCents']);
+        $order->setPromoCode($details['promo'] ? $details['promo']->getCode() : null);
+
         $em->persist($order);
         $em->flush();
 
@@ -75,12 +80,13 @@ class CheckoutController extends AbstractController
 
         // --- Création de la session de paiement Stripe ---
         Stripe::setApiKey($this->stripeSecretKey);
+        $currency = strtolower($this->shop['currency'] ?? 'eur');
 
         $lineItems = [];
         foreach ($order->getItems() as $item) {
             $lineItems[] = [
                 'price_data' => [
-                    'currency' => strtolower($this->shop['currency'] ?? 'eur'),
+                    'currency' => $currency,
                     'product_data' => ['name' => $item->getProductName()],
                     'unit_amount' => $item->getUnitPriceCents(),
                 ],
@@ -88,14 +94,39 @@ class CheckoutController extends AbstractController
             ];
         }
 
-        $session = StripeSession::create([
+        // Frais de port en ligne dédiée
+        if ($order->getShippingCents() > 0) {
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => $currency,
+                    'product_data' => ['name' => 'Frais de livraison'],
+                    'unit_amount' => $order->getShippingCents(),
+                ],
+                'quantity' => 1,
+            ];
+        }
+
+        $sessionParams = [
             'mode' => 'payment',
             'line_items' => $lineItems,
             'customer_email' => $user->getEmail(),
             'success_url' => $this->generateUrl('app_checkout_success', ['order' => $order->getId()], 0)
                 . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $this->generateUrl('app_checkout_cancel', ['order' => $order->getId()], 0),
-        ]);
+        ];
+
+        // Remise : coupon Stripe créé à la volée
+        if ($order->getDiscountCents() > 0) {
+            $coupon = \Stripe\Coupon::create([
+                'amount_off' => $order->getDiscountCents(),
+                'currency' => $currency,
+                'duration' => 'once',
+                'name' => 'Code promo ' . $order->getPromoCode(),
+            ]);
+            $sessionParams['discounts'] = [['coupon' => $coupon->id]];
+        }
+
+        $session = StripeSession::create($sessionParams);
 
         $order->setStripeSessionId($session->id);
         $em->flush();

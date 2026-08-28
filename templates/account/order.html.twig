@@ -31,6 +31,20 @@
         </tbody>
         <tfoot>
             <tr>
+                <td colspan="3" style="text-align:right;">Sous-total</td>
+                <td>{{ order.itemsTotalCents|price }}</td>
+            </tr>
+            {% if order.discountCents > 0 %}
+                <tr>
+                    <td colspan="3" style="text-align:right; color:#067647;">Remise{% if order.promoCode %} ({{ order.promoCode }}){% endif %}</td>
+                    <td style="color:#067647;">− {{ order.discountCents|price }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td colspan="3" style="text-align:right;">Livraison</td>
+                <td>{% if order.shippingCents == 0 %}Offerte{% else %}{{ order.shippingCents|price }}{% endif %}</td>
+            </tr>
+            <tr>
                 <td colspan="3" style="text-align:right;"><strong>Total</strong></td>
                 <td><strong style="color:var(--color-primary);">{{ order.totalCents|price }}</strong></td>
             </tr>

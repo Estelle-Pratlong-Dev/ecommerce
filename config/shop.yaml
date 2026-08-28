@@ -50,6 +50,7 @@ parameters:
         currency:        'EUR'      # Devise (EUR, USD, GBP...)
         currency_symbol: '€'
         vat_rate:        20         # Taux de TVA en % (à titre indicatif)
+        #  Les frais de port se règlent dans l'admin (menu « Livraison »), pas ici.
 
         # --- Filtres de la boutique (panneau latéral) -------------------------
         #  Mets "true" pour afficher un filtre, "false" pour le masquer.

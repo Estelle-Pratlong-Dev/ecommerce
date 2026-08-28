@@ -6,6 +6,8 @@ use App\Catalog\BrandProvider;
 use App\Catalog\ColorProvider;
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Promo;
+use App\Entity\Setting;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -94,6 +96,24 @@ class AppFixtures extends Fixture
             $product->setSize($size);
             $manager->persist($product);
         }
+
+        // --- Paramètres livraison (forfait 4,90 € / offerte dès 60 €) ---
+        $settings = new Setting();
+        $settings->setShippingFlatCents(490);
+        $settings->setShippingFreeFromCents(6000);
+        $manager->persist($settings);
+
+        // --- Codes promo de démo ---
+        $promo1 = new Promo();
+        $promo1->setCode('BIENVENUE10');
+        $promo1->setPercent(10);
+        $manager->persist($promo1);
+
+        $promo2 = new Promo();
+        $promo2->setCode('MOINS5');
+        $promo2->setAmountCents(500);   // -5 €
+        $promo2->setMinCents(3000);     // dès 30 € d'achat
+        $manager->persist($promo2);
 
         $manager->flush();
     }

@@ -64,4 +64,34 @@ class CartController extends AbstractController
 
         return $this->redirectToRoute('app_cart');
     }
+
+    #[Route('/code-promo', name: 'app_cart_promo', methods: ['POST'])]
+    public function applyPromo(Request $request, CartService $cart): Response
+    {
+        if (!$this->isCsrfTokenValid('cart_promo', (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $code = trim((string) $request->request->get('code'));
+        if ($code !== '' && $cart->applyPromo($code)) {
+            $this->addFlash('success', 'Code promo appliqué.');
+        } else {
+            $this->addFlash('error', 'Code promo invalide ou expiré.');
+        }
+
+        return $this->redirectToRoute('app_cart');
+    }
+
+    #[Route('/code-promo/retirer', name: 'app_cart_promo_remove', methods: ['POST'])]
+    public function removePromo(Request $request, CartService $cart): Response
+    {
+        if (!$this->isCsrfTokenValid('cart_promo_remove', (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $cart->removePromo();
+        $this->addFlash('info', 'Code promo retiré.');
+
+        return $this->redirectToRoute('app_cart');
+    }
 }

@@ -12,6 +12,20 @@
         </tr>
     {% endfor %}
     <tr>
+        <td colspan="2" align="right" style="padding:8px 0; color:#64748b;">Sous-total</td>
+        <td align="right" style="padding:8px 0;">{{ order.itemsTotalCents|price }}</td>
+    </tr>
+    {% if order.discountCents > 0 %}
+        <tr>
+            <td colspan="2" align="right" style="padding:4px 0; color:#067647;">Remise{% if order.promoCode %} ({{ order.promoCode }}){% endif %}</td>
+            <td align="right" style="padding:4px 0; color:#067647;">− {{ order.discountCents|price }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td colspan="2" align="right" style="padding:4px 0; color:#64748b;">Livraison</td>
+        <td align="right" style="padding:4px 0;">{% if order.shippingCents == 0 %}Offerte{% else %}{{ order.shippingCents|price }}{% endif %}</td>
+    </tr>
+    <tr>
         <td colspan="2" align="right" style="padding:14px 0; font-weight:bold;">Total</td>
         <td align="right" style="padding:14px 0; font-weight:bold; font-size:18px; color:{{ shop.theme.primary }};">{{ order.totalCents|price }}</td>
     </tr>
