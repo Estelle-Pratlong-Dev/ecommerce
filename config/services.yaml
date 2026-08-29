@@ -20,8 +20,9 @@ services:
         bind:
             # Rend la config de la boutique injectable via "array $shop" dans n'importe quel service
             array $shop: '%shop%'
-            # Clé secrète Stripe (définie dans .env / .env.local)
+            # Clés Stripe (définies dans .env / .env.local)
             string $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+            string $stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

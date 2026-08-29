@@ -4,17 +4,26 @@
 
 {% block body %}
     <div style="text-align:center; padding:3rem 0;">
-        <div style="font-size:4rem;">✅</div>
-        <h1>Merci pour votre commande !</h1>
-        <p>Votre commande <strong>{{ order.reference }}</strong> a bien été enregistrée.</p>
+        {% if paid %}
+            <div style="font-size:4rem;">✅</div>
+            <h1>Merci pour votre commande !</h1>
+            <p>Votre commande <strong>{{ order.reference }}</strong> a bien été enregistrée et payée.</p>
+        {% else %}
+            <div style="font-size:4rem;">⏳</div>
+            <h1>Paiement en cours de validation</h1>
+            <p>Votre commande <strong>{{ order.reference }}</strong> est bien enregistrée. Sa confirmation
+               arrive dans un instant — vous recevrez un e-mail dès que le paiement est validé.</p>
+        {% endif %}
+
         {% if app.request.query.get('dev') %}
-            <p style="color:#92400e; background:#fef3c7; display:inline-block; padding:0.5rem 1rem; border-radius:8px;">
+            <p style="color:#92400e; background:#fef3c7; display:inline-block; padding:0.5rem 1rem;">
                 ⚠️ Mode démo : paiement simulé (Stripe non configuré).
             </p>
         {% endif %}
+
         <p style="margin-top:2rem;">
             <a href="{{ path('app_account_order', { id: order.id }) }}" class="btn">Voir ma commande</a>
-            <a href="{{ path('app_catalog') }}" class="btn-ghost" style="color:var(--color-primary);">Continuer mes achats</a>
+            <a href="{{ path('app_catalog') }}" class="btn-ghost">Continuer mes achats</a>
         </p>
     </div>
 {% endblock %}

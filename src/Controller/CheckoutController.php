@@ -7,7 +7,7 @@ use App\Entity\OrderItem;
 use App\Entity\User;
 use App\Repository\OrderRepository;
 use App\Service\CartService;
-use App\Service\OrderMailer;
+use App\Service\OrderFulfiller;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
@@ -110,6 +110,7 @@ class CheckoutController extends AbstractController
             'mode' => 'payment',
             'line_items' => $lineItems,
             'customer_email' => $user->getEmail(),
+            'client_reference_id' => (string) $order->getId(),
             'success_url' => $this->generateUrl('app_checkout_success', ['order' => $order->getId()], 0)
                 . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $this->generateUrl('app_checkout_cancel', ['order' => $order->getId()], 0),
@@ -135,28 +136,40 @@ class CheckoutController extends AbstractController
     }
 
     #[Route('/succes/{order}', name: 'app_checkout_success')]
-    public function success(Order $order, CartService $cart, EntityManagerInterface $em, OrderMailer $orderMailer): Response
+    public function success(Order $order, CartService $cart, OrderFulfiller $fulfiller): Response
     {
         if ($order->getCustomer() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
         }
 
-        // Marque la commande payée + décrémente le stock + envoie les e-mails (une seule fois).
+        // La validation officielle passe par le webhook Stripe. Ici on ne fait qu'un
+        // filet de sécurité si la commande est encore « en attente » au retour du client.
         if ($order->getStatus() === Order::STATUS_PENDING) {
-            $order->setStatus(Order::STATUS_PAID);
-            foreach ($order->getItems() as $item) {
-                $product = $item->getProduct();
-                if ($product) {
-                    $product->setStock(max(0, $product->getStock() - $item->getQuantity()));
+            if (!$this->stripeSecretKey) {
+                // Mode démo (pas de clé) : on simule le paiement.
+                $fulfiller->fulfill($order);
+            } else {
+                // Mode réel : on vérifie auprès de Stripe (au cas où le webhook n'est pas encore arrivé).
+                try {
+                    Stripe::setApiKey($this->stripeSecretKey);
+                    $session = StripeSession::retrieve($order->getStripeSessionId());
+                    if (($session->payment_status ?? null) === 'paid') {
+                        $fulfiller->fulfill($order);
+                    }
+                } catch (\Throwable) {
+                    // On n'échoue pas la page : le webhook validera la commande.
                 }
             }
-            $em->flush();
-            $cart->clear();
-
-            $orderMailer->sendOrderPlaced($order);
         }
 
-        return $this->render('checkout/success.html.twig', ['order' => $order]);
+        if ($order->getStatus() === Order::STATUS_PAID) {
+            $cart->clear();
+        }
+
+        return $this->render('checkout/success.html.twig', [
+            'order' => $order,
+            'paid' => $order->getStatus() === Order::STATUS_PAID,
+        ]);
     }
 
     #[Route('/annulee/{order}', name: 'app_checkout_cancel')]
